@@ -392,11 +392,11 @@ footer span{color:var(--red);}
   <div class="hero-bar">
     <div class="hb-item"><div class="hb-n">6+</div><div class="hb-l">Anos de<br>experiência</div></div>
     <div class="hb-sep"></div>
-    <div class="hb-item"><div class="hb-n">3</div><div class="hb-l">Empresas<br>em que atuei</div></div>
+    <div class="hb-item"><div class="hb-n">2</div><div class="hb-l">Empresas<br>em que atuei</div></div>
     <div class="hb-sep"></div>
     <div class="hb-item"><div class="hb-n">4</div><div class="hb-l">Certificados<br>Estácio</div></div>
     <div class="hb-sep"></div>
-    <div class="hb-item"><div class="hb-n">2</div><div class="hb-l">Graduações<br>em andamento/concluída</div></div>
+    <div class="hb-item"><div class="hb-n">3</div><div class="hb-l">Graduações<br>em andamento/concluída</div></div>
   </div>
 </section>
 
@@ -581,7 +581,12 @@ footer span{color:var(--red);}
   <p>Paraíba do Sul <span>·</span> Rio de Janeiro <span>·</span> Brasil</p>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
 <script>
+gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
 // cursor
 const cur=document.getElementById('cur'),ring=document.getElementById('ring');
 let rx=0,ry=0,mx=0,my=0;
@@ -595,22 +600,142 @@ document.querySelectorAll('a,button,.xp-card,.sk-card,.edu-card,.cert-card,.stac
   el.addEventListener('mouseleave',()=>{cur.style.transform='scale(1)';ring.style.transform='scale(1)';});
 });
 
-// observer
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach((e,i)=>{
-    if(e.isIntersecting){
-      setTimeout(()=>{
-        e.target.classList.add('visible');
-        const f=e.target.querySelector('.sk-fill');
-        if(f)f.style.width=f.dataset.w+'%';
-      },i*65);
+// ── HERO GSAP ──
+const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+heroTl
+  .from('.hero-tag',   { opacity:0, y:30, duration:.7 })
+  .from('.hero-name',  { opacity:0, y:50, duration:.8, skewY:2 }, '-=.3')
+  .from('.hero-sub',   { opacity:0, y:20, duration:.6 }, '-=.4')
+  .from('.hero-desc',  { opacity:0, y:20, duration:.6 }, '-=.4')
+  .from('.hero-btns',  { opacity:0, y:20, duration:.6 }, '-=.3')
+  .from('.hb-item',    { opacity:0, y:15, duration:.5, stagger:.12 }, '-=.3')
+  .from('.hero-grid',  { opacity:0, duration:1.2 }, 0)
+  .from('.hero-glow',  { opacity:0, scale:.6, duration:1.5, ease:'power2.out' }, 0);
+
+// ── NAV ──
+gsap.from('nav', { opacity:0, y:-30, duration:.8, ease:'power3.out', delay:.2 });
+
+// ── SECTION LABELS & TITLES ──
+gsap.utils.toArray('.s-label').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger:{ trigger:el, start:'top 88%' },
+    opacity:0, x:-30, duration:.6, ease:'power3.out'
+  });
+});
+gsap.utils.toArray('.s-title').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger:{ trigger:el, start:'top 85%' },
+    opacity:0, y:40, duration:.7, skewY:1.5, ease:'power3.out'
+  });
+});
+
+// ── SOBRE ──
+gsap.from('.sobre-text p', {
+  scrollTrigger:{ trigger:'.sobre-wrap', start:'top 80%' },
+  opacity:0, y:25, duration:.6, stagger:.15, ease:'power3.out'
+});
+gsap.from('.attr-row', {
+  scrollTrigger:{ trigger:'.attr-list', start:'top 82%' },
+  opacity:0, x:20, duration:.5, stagger:.1, ease:'power3.out'
+});
+
+// ── XP CARDS ──
+gsap.utils.toArray('.xp-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity:0, y:40, x: i%2===0 ? -20 : 20 },
+    {
+      scrollTrigger:{ trigger:card, start:'top 85%' },
+      opacity:1, y:0, x:0, duration:.7, ease:'power3.out',
+      onComplete: () => card.classList.add('visible')
     }
+  );
+});
+
+// ── SKILL CARDS ──
+gsap.utils.toArray('.sk-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity:0, y:30, scale:.95 },
+    {
+      scrollTrigger:{ trigger:card, start:'top 88%' },
+      opacity:1, y:0, scale:1, duration:.55, delay: i * .04, ease:'back.out(1.4)',
+      onComplete: () => {
+        card.classList.add('visible');
+        const f = card.querySelector('.sk-fill');
+        if(f) f.style.width = f.dataset.w + '%';
+      }
+    }
+  );
+});
+
+// ── STACK CHIPS ──
+gsap.from('.stack-chip', {
+  scrollTrigger:{ trigger:'.stack-row', start:'top 88%' },
+  opacity:0, y:15, scale:.9, duration:.4, stagger:.05, ease:'back.out(1.6)'
+});
+
+// ── EDU CARDS ──
+gsap.utils.toArray('.edu-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity:0, y:30, rotationX:8 },
+    {
+      scrollTrigger:{ trigger:card, start:'top 88%' },
+      opacity:1, y:0, rotationX:0, duration:.65, delay: i * .1, ease:'power3.out',
+      onComplete: () => card.classList.add('visible')
+    }
+  );
+});
+
+// ── CERT CARDS ──
+gsap.utils.toArray('.cert-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity:0, x:-30 },
+    {
+      scrollTrigger:{ trigger:card, start:'top 90%' },
+      opacity:1, x:0, duration:.55, delay: i * .07, ease:'power3.out',
+      onComplete: () => card.classList.add('visible')
+    }
+  );
+});
+
+// ── CONTATO ──
+gsap.set('.ct-box p', { opacity:1 });
+gsap.set('.ct-row', { opacity:1 });
+gsap.from('.ct-box p', {
+  scrollTrigger:{ trigger:'.ct-box', start:'top 95%', toggleActions:'play none none none' },
+  opacity:0, y:20, duration:.6, ease:'power3.out'
+});
+gsap.from('.ct-row', {
+  scrollTrigger:{ trigger:'.ct-rows', start:'top 95%', toggleActions:'play none none none' },
+  opacity:0, x:-20, duration:.5, stagger:.1, ease:'power3.out'
+});
+
+// ── HB NUMBERS COUNTER ──
+document.querySelectorAll('.hb-n').forEach(el => {
+  const raw = el.textContent.trim();
+  const num = parseFloat(raw);
+  const suffix = raw.replace(/[0-9.]/g, '');
+  if(!isNaN(num)){
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: num, duration: 1.8, ease: 'power2.out', delay: .8,
+      onUpdate: function(){ el.textContent = Math.round(obj.val) + suffix; }
+    });
+  }
+});
+
+// ── HERO GLOW PARALLAX ──
+gsap.to('.hero-glow', {
+  scrollTrigger:{ trigger:'#hero', start:'top top', end:'bottom top', scrub:1.5 },
+  y: -120, scale: 1.15, opacity:.4
+});
+
+// ── REVEAL fallback ──
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e)=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
   });
 },{threshold:.1});
-
-document.querySelectorAll('.xp-card,.sk-card,.edu-card,.cert-card,.reveal').forEach(el=>obs.observe(el));
-document.querySelectorAll('.sk-card').forEach((c,i)=>c.style.transitionDelay=(i*.04)+'s');
-document.querySelectorAll('.cert-card').forEach((c,i)=>c.style.transitionDelay=(i*.07)+'s');
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
