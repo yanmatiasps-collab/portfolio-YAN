@@ -8,7 +8,7 @@ https://yanmatiasps-collab.github.io/portfolio-YAN/
 - HTML5
 - CSS3
 - JavaScript
-- GSAP (animações)
+- GSAP 
 
 # Sobre
 Formado em Análise e Desenvolvimento de Sistemas pela Estácio.
