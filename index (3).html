@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#080808">
+<title>Yan Honorato Matias</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #090909;
+  --bg2:   #111114;
+  --card:  #141418;
+  --card2: #1a1a1f;
+  --line:  #28282f;
+  --red:   #7c3aed;
+  --red2:  #60a5fa;
+  --gray:  #b0b0b8;
+  --dim:   #606068;
+  --white: #f2f2f2;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;color-scheme:dark;background:#090909;}
+body{
+  background:linear-gradient(160deg,#0d0d10 0%,#090909 40%,#0f0f14 70%,#111116 100%) !important;
+  background-attachment:fixed !important;
+  color:var(--white) !important;
+  font-family:'Barlow',sans-serif;overflow-x:hidden;cursor:none;
+}
+@media(prefers-color-scheme:light){
+  html{background:#090909 !important;}
+  body{background:#090909 !important;color:#f2f2f2 !important;}
+}
+
+/* CURSOR */
+.cur{width:10px;height:10px;background:var(--red);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transition:transform .1s;}
+.cur-ring{width:32px;height:32px;border:1px solid rgba(124,58,237,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .13s ease;}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.1rem 4rem;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(90deg,rgba(9,9,10,.95) 0%,rgba(15,15,20,.95) 100%);
+  backdrop-filter:blur(20px);
+}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.08em;color:var(--red);}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim);text-decoration:none;letter-spacing:.14em;text-transform:uppercase;transition:color .25s;}
+.nav-links a:hover{color:var(--red);}
+.nav-pill{
+  display:flex;align-items:center;gap:.45rem;
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--red);border:1px solid rgba(124,58,237,.3);
+  padding:.3rem .85rem;border-radius:2px;
+}
+.nav-pill::before{content:'';width:5px;height:5px;background:var(--red);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* HERO */
+#hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:8rem 4rem 4rem;
+  position:relative;overflow:hidden;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(96,165,250,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(96,165,250,.05) 1px,transparent 1px);
+  background-size:55px 55px;
+  mask-image:radial-gradient(ellipse 70% 70% at 50% 40%,black 30%,transparent 100%);
+}
+.hero-glow{
+  position:absolute;width:700px;height:700px;
+  background:radial-gradient(circle,rgba(124,58,237,.07) 0%,transparent 65%);
+  top:50%;left:40%;transform:translate(-50%,-50%);pointer-events:none;
+}
+.hero-inner{position:relative;z-index:2;max-width:1100px;}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  color:var(--red);border:1px solid rgba(124,58,237,.25);
+  padding:.35rem .9rem;border-radius:2px;margin-bottom:2.2rem;
+  animation:fadeUp .6s ease both;
+}
+.hero-tag span{color:var(--dim);}
+.hero-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4.5rem,11vw,10rem);
+  line-height:.92;letter-spacing:.03em;
+  margin-bottom:1rem;
+  animation:fadeUp .6s .08s ease both;
+}
+.hero-name .red{color:var(--red);}
+.hero-name .gray{color:var(--gray);}
+.hero-sub{
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  color:var(--dim);letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:1.5rem;
+  animation:fadeUp .6s .16s ease both;
+}
+.hero-desc{
+  font-size:1rem;color:rgba(242,242,242,.55);
+  max-width:520px;line-height:1.75;
+  margin-bottom:2.5rem;
+  animation:fadeUp .6s .24s ease both;
+}
+.hero-btns{display:flex;gap:.85rem;animation:fadeUp .6s .32s ease both;}
+.btn-r{
+  padding:.85rem 2rem;background:var(--red);color:#fff;
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:500;
+  letter-spacing:.07em;text-decoration:none;border-radius:2px;
+  transition:all .25s;
+}
+.btn-r:hover{background:var(--red2);transform:translateY(-2px);box-shadow:0 8px 26px rgba(124,58,237,.35);}
+.btn-o{
+  padding:.85rem 2rem;border:1px solid var(--line);color:var(--gray);
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  letter-spacing:.07em;text-decoration:none;border-radius:2px;
+  transition:all .25s;
+}
+.btn-o:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px);}
+
+/* hero bottom bar */
+.hero-bar{
+  position:absolute;bottom:3rem;left:4rem;right:4rem;
+  display:flex;gap:3rem;align-items:center;
+  border-top:1px solid var(--line);padding-top:1.5rem;
+  animation:fadeUp .6s .4s ease both;
+  z-index:2;
+}
+.hb-item{display:flex;align-items:baseline;gap:.6rem;}
+.hb-n{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--red);line-height:1;}
+.hb-l{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;}
+.hb-sep{width:1px;height:28px;background:var(--line);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTIONS */
+section{padding:6rem 4rem;border-top:1px solid var(--line);position:relative;}
+section:nth-child(even){background:linear-gradient(180deg,rgba(20,20,26,.6) 0%,transparent 100%);}
+section:nth-child(odd){background:linear-gradient(180deg,transparent 0%,rgba(16,16,22,.4) 100%);}
+.s-label{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--red);letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:.6rem;display:flex;align-items:center;gap:.65rem;
+}
+.s-label::before{content:'';width:22px;height:1px;background:var(--red);}
+.s-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.5rem,5vw,4.5rem);
+  letter-spacing:.04em;line-height:1;
+  margin-bottom:3.5rem;color:var(--white);
+}
+.s-title span{color:var(--red);}
+
+/* SOBRE */
+.sobre-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;}
+.sobre-text p{color:rgba(242,242,242,.55);line-height:1.85;font-size:.95rem;margin-bottom:1rem;}
+.sobre-text p b{color:var(--white);font-weight:500;}
+.attr-list{margin-top:2rem;}
+.attr-row{
+  display:flex;align-items:center;gap:.9rem;
+  padding:.7rem 0;border-bottom:1px solid var(--line);
+  font-size:.85rem;color:rgba(242,242,242,.5);
+}
+.attr-row:last-child{border:none;}
+.attr-icon{font-size:.85rem;width:1.3rem;text-align:center;}
+
+/* CARDS base */
+.card-hover{
+  background:linear-gradient(145deg,var(--card2) 0%,var(--card) 60%,#101014 100%);
+  border:1px solid var(--line);
+  border-radius:4px;transition:all .3s;
+}
+.card-hover:hover{border-color:rgba(124,58,237,.35);box-shadow:0 4px 24px rgba(96,165,250,.06);}
+
+/* XP */
+.xp-list{display:flex;flex-direction:column;gap:1rem;}
+.xp-card{
+  display:grid;grid-template-columns:140px 1fr;gap:2rem;
+  padding:1.8rem 2rem;
+  opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease,border-color .3s,box-shadow .3s;
+}
+.xp-card.visible{opacity:1;transform:translateY(0);}
+.xp-period{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--red);line-height:1.6;}
+.xp-company{font-size:.75rem;color:var(--dim);margin-top:.35rem;line-height:1.5;}
+.xp-role{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;margin-bottom:.5rem;}
+.xp-desc{font-size:.85rem;color:rgba(242,242,242,.5);line-height:1.7;margin-bottom:.9rem;}
+.xp-tags{display:flex;flex-wrap:wrap;gap:.4rem;}
+.xtag{
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  color:var(--dim);background:rgba(255,255,255,.03);
+  border:1px solid var(--line);padding:.22rem .6rem;border-radius:2px;
+  transition:all .2s;
+}
+.xtag:hover{color:var(--red);border-color:rgba(124,58,237,.3);}
+
+/* SKILLS */
+.sk-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;}
+.sk-card{
+  padding:1.25rem 1.4rem;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .45s ease,transform .45s ease,border-color .3s;
+}
+.sk-card.visible{opacity:1;transform:translateY(0);}
+.sk-card:hover{border-color:rgba(124,58,237,.35);transform:translateY(-3px);}
+.sk-name{font-size:.8rem;font-weight:500;color:rgba(242,242,242,.7);margin-bottom:.8rem;}
+.sk-track{height:2px;background:var(--line);border-radius:1px;overflow:hidden;}
+.sk-fill{height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--red2));border-radius:1px;transition:width 1.1s cubic-bezier(.4,0,.2,1);}
+
+/* FORMAÇÃO */
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.edu-card{
+  padding:1.8rem 2rem;
+  opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease,border-color .3s;
+}
+.edu-card.visible{opacity:1;transform:translateY(0);}
+.edu-badge{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.55rem;
+  color:var(--red);border:1px solid rgba(124,58,237,.25);
+  padding:.18rem .6rem;border-radius:2px;margin-bottom:.9rem;
+}
+.edu-curso{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;margin-bottom:.3rem;}
+.edu-inst{font-size:.82rem;color:var(--red);margin-bottom:.4rem;}
+.edu-per{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--dim);}
+
+/* CERTS */
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.75rem;}
+.cert-card{
+  padding:1.3rem 1.5rem;display:flex;align-items:flex-start;gap:.9rem;
+  opacity:0;transform:translateX(-14px);transition:opacity .5s ease,transform .5s ease,border-color .3s;
+}
+.cert-card.visible{opacity:1;transform:translateX(0);}
+.cert-card:hover{border-color:rgba(124,58,237,.35);transform:translateY(-2px);}
+.cert-sq{width:6px;height:6px;background:var(--red);border-radius:1px;flex-shrink:0;margin-top:.35rem;}
+.cert-name{font-size:.85rem;font-weight:500;margin-bottom:.28rem;}
+.cert-meta{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--dim);}
+
+/* CONTATO */
+#contato{background:var(--bg2);}
+.ct-box{max-width:650px;}
+.ct-box p{color:rgba(242,242,242,.5);line-height:1.8;font-size:.95rem;margin-bottom:2rem;}
+.ct-rows{display:flex;flex-direction:column;gap:.65rem;}
+.ct-row{
+  display:flex;align-items:center;gap:1rem;
+  background:linear-gradient(90deg,var(--card2) 0%,var(--card) 100%);
+  border:1px solid var(--line);
+  border-radius:3px;padding:.95rem 1.4rem;
+  font-size:.88rem;color:rgba(242,242,242,.6);
+  transition:all .25s;text-decoration:none;
+}
+.ct-row:hover{border-color:rgba(124,58,237,.35);color:var(--white);}
+.ct-icon{
+  width:32px;height:32px;background:rgba(96,165,250,.08);
+  border:1px solid rgba(124,58,237,.18);border-radius:3px;
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--line);
+  padding:1.6rem 4rem;
+  display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(90deg,#0d0d10 0%,#131318 50%,#0d0d10 100%);
+}
+footer p{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--dim);}
+footer span{color:var(--red);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s ease,transform .55s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* STACK SECTION */
+.stack-row{display:flex;flex-wrap:wrap;gap:.6rem;}
+.stack-chip{
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  color:var(--gray);background:var(--card2);
+  border:1px solid var(--line);padding:.4rem 1rem;border-radius:2px;
+  transition:all .2s;
+}
+.stack-chip:hover{border-color:rgba(124,58,237,.35);color:var(--red);}
+
+@media(max-width:768px){
+  /* cursor invisível no mobile */
+  .cur,.cur-ring{display:none;}
+  body{cursor:auto;}
+
+  nav{padding:1rem 1.5rem;}
+  .nav-links{display:none;}
+  .nav-pill{font-size:.55rem;padding:.25rem .6rem;}
+
+  /* hero */
+  #hero{padding:6rem 1.5rem 9rem;}
+  .hero-name{font-size:clamp(3rem,15vw,5.5rem);line-height:.95;}
+  .hero-sub{font-size:.6rem;letter-spacing:.12em;}
+  .hero-desc{font-size:.9rem;max-width:100%;}
+  .hero-btns{flex-direction:column;gap:.65rem;}
+  .btn-r,.btn-o{text-align:center;padding:.85rem 1.5rem;font-size:.65rem;}
+
+  /* hero bar — scroll horizontal em vez de comprimir */
+  .hero-bar{
+    left:0;right:0;padding:1rem 1.5rem;
+    overflow-x:auto;gap:1.5rem;flex-wrap:nowrap;
+    border-top:1px solid var(--line);
+  }
+  .hb-item{flex-shrink:0;}
+  .hb-n{font-size:1.8rem;}
+  .hb-l{font-size:.5rem;}
+
+  /* sections */
+  section{padding:3.5rem 1.5rem;}
+  .s-title{font-size:clamp(2rem,8vw,3rem);margin-bottom:2rem;}
+
+  /* sobre */
+  .sobre-wrap{grid-template-columns:1fr;gap:2rem;}
+  .sobre-text p{font-size:.9rem;}
+  .attr-row{font-size:.82rem;}
+
+  /* experiência */
+  .xp-card{grid-template-columns:1fr;gap:.6rem;padding:1.2rem 1.2rem;}
+  .xp-role{font-size:1.25rem;}
+  .xp-desc{font-size:.82rem;}
+  .xp-period{font-size:.6rem;}
+  .xp-company{font-size:.72rem;}
+  .xtag{font-size:.56rem;}
+
+  /* skills */
+  .sk-wrap{grid-template-columns:1fr 1fr;}
+  .sk-name{font-size:.75rem;}
+
+  /* formação */
+  .edu-grid{grid-template-columns:1fr;gap:1rem;}
+  .edu-card{padding:1.4rem 1.4rem;}
+  .edu-curso{font-size:1.1rem;}
+
+  /* certificados */
+  .cert-grid{grid-template-columns:1fr;}
+  .cert-name{font-size:.82rem;}
+
+  /* contato */
+  .ct-box p{font-size:.88rem;}
+  .ct-row{font-size:.82rem;padding:.8rem 1rem;}
+
+  /* footer */
+  footer{padding:1.5rem;flex-direction:column;gap:.4rem;text-align:center;}
+  footer p{font-size:.58rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="ring"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">YHM</div>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#experiencia">Experiência</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#formacao">Formação</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <div class="nav-pill">Disponível para oportunidades</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="border:none;">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-tag">✦ <span>Portfólio Profissional</span> · 2026</div>
+    <div class="hero-name">
+      YAN <span class="red">HONORATO</span><br><span class="gray">MATIAS</span>
+    </div>
+    <div class="hero-sub">Software · TI · Administração · Paraíba do Sul — RJ</div>
+    <p class="hero-desc">
+      Formado em Análise e Desenvolvimento de Sistemas, com experiência em TI e Administração no INSS. Técnico em manutenção com visão analítica e perfil versátil.
+    </p>
+    <div class="hero-btns">
+      <a href="https://www.linkedin.com/in/yan-honorato-matias-ba396b363/" target="_blank" class="btn-r">Fale comigo →</a>
+      <a href="#experiencia" class="btn-o">Ver Experiências ↓</a>
+    </div>
+  </div>
+  <div class="hero-bar">
+    <div class="hb-item"><div class="hb-n">6+</div><div class="hb-l">Anos de<br>experiência</div></div>
+    <div class="hb-sep"></div>
+    <div class="hb-item"><div class="hb-n">2</div><div class="hb-l">Empresas<br>em que atuei</div></div>
+    <div class="hb-sep"></div>
+    <div class="hb-item"><div class="hb-n">4</div><div class="hb-l">Certificados<br>Estácio</div></div>
+    <div class="hb-sep"></div>
+    <div class="hb-item"><div class="hb-n">3</div><div class="hb-l">Graduações<br>em andamento/concluída</div></div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="s-label">01 — Sobre</div>
+  <div class="s-title">QUEM SOU <span>EU</span></div>
+  <div class="sobre-wrap reveal">
+    <div class="sobre-text">
+      <p>Sou <b>Yan Honorato Matias</b>, de Paraíba do Sul, Rio de Janeiro. Formado em Análise e Desenvolvimento de Sistemas pela Estácio, atualmente cursando Administração na UniCesumar.</p>
+      <p>Comecei minha trajetória como Mecânico de Manutenção, onde desenvolvi disciplina técnica e raciocínio rápido para resolver problemas. Migrei para <b>Tecnologia da Informação</b> e hoje combino esse olhar analítico com as demandas administrativas do INSS.</p>
+      <p>Tenho perfil versátil, com experiência prática em suporte técnico, análise de dados e gestão de arquivos dentro de uma das maiores instituições públicas do Brasil.</p>
+    </div>
+    <div>
+      <div class="attr-list">
+        <div class="attr-row"><span class="attr-icon">📍</span>Paraíba do Sul, Rio de Janeiro</div>
+        <div class="attr-row"><span class="attr-icon">🏛️</span>Estagiário Administrativo — INSS</div>
+        <div class="attr-row"><span class="attr-icon">🎓</span>ADS — Estácio (concluído)</div>
+        <div class="attr-row"><span class="attr-icon">📚</span>Administração — UniCesumar (cursando)</div>
+        <div class="attr-row"><span class="attr-icon">🔧</span>Técnico em Manutenção</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIÊNCIA -->
+<section id="experiencia" style="background:var(--bg2);">
+  <div class="s-label">02 — Experiência</div>
+  <div class="s-title">ONDE <span>TRABALHEI</span></div>
+  <div class="xp-list">
+
+    <div class="xp-card card-hover">
+      <div>
+        <div class="xp-period">ABR 2026<br>— ATUAL</div>
+        <div class="xp-company">INSS · Estágio<br>Paraíba do Sul, RJ</div>
+      </div>
+      <div>
+        <div class="xp-role">Estagiário Administrativo</div>
+        <div class="xp-desc">Gestão de arquivos, elaboração de relatórios e atendimento ao cidadão. Suporte às rotinas administrativas da unidade.</div>
+        <div class="xp-tags">
+          <span class="xtag">Arquivos</span><span class="xtag">Administração</span>
+          <span class="xtag">Relatórios</span><span class="xtag">Microsoft Excel</span>
+          <span class="xtag">Atendimento ao cliente</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="xp-card card-hover">
+      <div>
+        <div class="xp-period">MAI 2023<br>— MAI 2025</div>
+        <div class="xp-company">INSS · Estágio<br>2 anos e 1 mês</div>
+      </div>
+      <div>
+        <div class="xp-role">Estagiário de TI</div>
+        <div class="xp-desc">Manutenção de computadores, instalação de software, entrada e análise de dados. Suporte técnico interno para servidores da instituição.</div>
+        <div class="xp-tags">
+          <span class="xtag">Manutenção de computadores</span>
+          <span class="xtag">Instalação de software</span>
+          <span class="xtag">Entrada de dados</span>
+          <span class="xtag">Análise de dados</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="xp-card card-hover">
+      <div>
+        <div class="xp-period">FEV 2019<br>— ABR 2023</div>
+        <div class="xp-company">Fábrica de Rendas<br>Finas Paraíba · 4a 3m</div>
+      </div>
+      <div>
+        <div class="xp-role">Mecânico de Manutenção</div>
+        <div class="xp-desc">Manutenção preventiva e corretiva de maquinário industrial. Operação de torno mecânico. Base técnica que sustenta a resolução de problemas.</div>
+        <div class="xp-tags">
+          <span class="xtag">Manutenção preventiva</span>
+          <span class="xtag">Torno mecânico</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="s-label">03 — Competências</div>
+  <div class="s-title">MINHAS <span>HABILIDADES</span></div>
+  <div class="sk-wrap">
+    <div class="sk-card card-hover"><div class="sk-name">Microsoft Excel</div><div class="sk-track"><div class="sk-fill" data-w="88"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Análise de Dados</div><div class="sk-track"><div class="sk-fill" data-w="82"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Manutenção de Computadores</div><div class="sk-track"><div class="sk-fill" data-w="92"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Instalação de Software</div><div class="sk-track"><div class="sk-fill" data-w="90"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Entrada de Dados</div><div class="sk-track"><div class="sk-fill" data-w="95"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Administração</div><div class="sk-track"><div class="sk-fill" data-w="76"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Atendimento ao Cidadão</div><div class="sk-track"><div class="sk-fill" data-w="84"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Relatórios</div><div class="sk-track"><div class="sk-fill" data-w="80"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Prog. para Internet</div><div class="sk-track"><div class="sk-fill" data-w="70"></div></div></div>
+    <div class="sk-card card-hover"><div class="sk-name">Prog. para Mobile</div><div class="sk-track"><div class="sk-fill" data-w="65"></div></div></div>
+  </div>
+
+
+</section>
+
+<!-- FORMAÇÃO -->
+<section id="formacao" style="background:var(--bg2);">
+  <div class="s-label">04 — Formação</div>
+  <div class="s-title">EDUCAÇÃO <span>ACADÊMICA</span></div>
+  <div class="edu-grid">
+    <div class="edu-card card-hover">
+      <div class="edu-badge">Em andamento</div>
+      <div class="edu-curso">Administração</div>
+      <div class="edu-inst">UniCesumar</div>
+      <div class="edu-per">Fev 2026 — Mar 2030</div>
+    </div>
+    <div class="edu-card card-hover">
+      <div class="edu-badge">Concluído</div>
+      <div class="edu-curso">Tecnólogo em Análise e Desenvolvimento de Sistemas</div>
+      <div class="edu-inst">Estácio</div>
+      <div class="edu-per">2022 — 2025</div>
+    </div>
+    <div class="edu-card card-hover">
+      <div class="edu-badge">Concluído</div>
+      <div class="edu-curso">Técnico em Mecânico de Manutenção</div>
+      <div class="edu-inst">SENAI</div>
+      <div class="edu-per">Concluído</div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICADOS -->
+<section id="certificados">
+  <div class="s-label">05 — Certificados</div>
+  <div class="s-title">CERTIFICAÇÕES <span>CONQUISTADAS</span></div>
+  <div class="cert-grid">
+    <div class="cert-card card-hover">
+      <div class="cert-sq"></div>
+      <div><div class="cert-name">Programação para Dispositivos Móveis</div><div class="cert-meta">Estácio · Mai 2025</div></div>
+    </div>
+    <div class="cert-card card-hover">
+      <div class="cert-sq"></div>
+      <div><div class="cert-name">Programação para Internet</div><div class="cert-meta">Estácio · Abr 2024</div></div>
+    </div>
+    <div class="cert-card card-hover">
+      <div class="cert-sq"></div>
+      <div><div class="cert-name">Programação de Sistemas de Informação</div><div class="cert-meta">Estácio · Abr 2024</div></div>
+    </div>
+    <div class="cert-card card-hover">
+      <div class="cert-sq"></div>
+      <div><div class="cert-name">Programação de Algoritmos Escaláveis</div><div class="cert-meta">Estácio · Abr 2024</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="s-label">06 — Contato</div>
+  <div class="s-title">VAMOS <span>CONVERSAR?</span></div>
+  <div class="ct-box reveal">
+    <p>Estou aberto a novas oportunidades em TI, Administração ou áreas afins. Entre em contato diretamente pelo LinkedIn!</p>
+    <div class="ct-rows">
+      <div class="ct-row"><div class="ct-icon">📍</div>Paraíba do Sul, Rio de Janeiro, Brasil</div>
+      <a href="https://www.linkedin.com/in/yan-honorato-matias-ba396b363/" target="_blank" class="ct-row"><div class="ct-icon">💼</div>LinkedIn: Yan Honorato Matias →</a>
+      <div class="ct-row"><div class="ct-icon">🏛️</div>Estagiário Administrativo — INSS</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <span>Yan Honorato Matias</span> — Todos os direitos reservados</p>
+  <p>Paraíba do Sul <span>·</span> Rio de Janeiro <span>·</span> Brasil</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+// cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let rx=0,ry=0,mx=0,my=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx-5+'px';cur.style.top=my-5+'px';
+});
+(function t(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx-16+'px';ring.style.top=ry-16+'px';requestAnimationFrame(t);})();
+document.querySelectorAll('a,button,.xp-card,.sk-card,.edu-card,.cert-card,.stack-chip').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='scale(2.2)';ring.style.transform='scale(1.4)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='scale(1)';ring.style.transform='scale(1)';});
+});
+
+// ── HERO GSAP ──
+const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+heroTl
+  .from('.hero-tag',   { opacity:0, y:30, duration:.7 })
+  .from('.hero-name',  { opacity:0, y:50, duration:.8, skewY:2 }, '-=.3')
+  .from('.hero-sub',   { opacity:0, y:20, duration:.6 }, '-=.4')
+  .from('.hero-desc',  { opacity:0, y:20, duration:.6 }, '-=.4')
+  .from('.hero-btns',  { opacity:0, y:20, duration:.6 }, '-=.3')
+  .from('.hb-item',    { opacity:0, y:15, duration:.5, stagger:.12 }, '-=.3')
+  .from('.hero-grid',  { opacity:0, duration:1.2 }, 0)
+  .from('.hero-glow',  { opacity:0, scale:.6, duration:1.5, ease:'power2.out' }, 0);
+
+// ── NAV ──
+gsap.from('nav', { opacity:0, y:-30, duration:.8, ease:'power3.out', delay:.2 });
+
+// ── SECTION LABELS & TITLES ──
+gsap.utils.toArray('.s-label').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger:{ trigger:el, start:'top 88%' },
+    opacity:0, x:-30, duration:.6, ease:'power3.out'
+  });
+});
+gsap.utils.toArray('.s-title').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger:{ trigger:el, start:'top 85%' },
+    opacity:0, y:40, duration:.7, skewY:1.5, ease:'power3.out'
+  });
+});
+
+// ── SOBRE ──
+gsap.from('.sobre-text p', {
+  scrollTrigger:{ trigger:'.sobre-wrap', start:'top 80%' },
+  opacity:0, y:25, duration:.6, stagger:.15, ease:'power3.out'
+});
+gsap.from('.attr-row', {
+  scrollTrigger:{ trigger:'.attr-list', start:'top 82%' },
+  opacity:0, x:20, duration:.5, stagger:.1, ease:'power3.out'
+});
+
+// ── XP CARDS ──
+gsap.utils.toArray('.xp-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity:0, y:40, x: i%2===0 ? -20 : 20 },
+    {
+      scrollTrigger:{ trigger:card, start:'top 85%' },
+      opacity:1, y:0, x:0, duration:.7, ease:'power3.out',
+      onComplete: () => card.classList.add('visible')
+    }
+  );
+});
+
+// ── SKILL CARDS ──
+gsap.utils.toArray('.sk-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity:0, y:30, scale:.95 },
+    {
+      scrollTrigger:{ trigger:card, start:'top 88%' },
+      opacity:1, y:0, scale:1, duration:.55, delay: i * .04, ease:'back.out(1.4)',
+      onComplete: () => {
+        card.classList.add('visible');
+        const f = card.querySelector('.sk-fill');
+        if(f) f.style.width = f.dataset.w + '%';
+      }
+    }
+  );
+});
+
+
+
+// ── EDU CARDS ──
+gsap.utils.toArray('.edu-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity:0, y:30, rotationX:8 },
+    {
+      scrollTrigger:{ trigger:card, start:'top 88%' },
+      opacity:1, y:0, rotationX:0, duration:.65, delay: i * .1, ease:'power3.out',
+      onComplete: () => card.classList.add('visible')
+    }
+  );
+});
+
+// ── CERT CARDS ──
+gsap.utils.toArray('.cert-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity:0, x:-30 },
+    {
+      scrollTrigger:{ trigger:card, start:'top 90%' },
+      opacity:1, x:0, duration:.55, delay: i * .07, ease:'power3.out',
+      onComplete: () => card.classList.add('visible')
+    }
+  );
+});
+
+// ── CONTATO ──
+gsap.set('.ct-box p', { opacity:1 });
+gsap.set('.ct-row', { opacity:1 });
+gsap.from('.ct-box p', {
+  scrollTrigger:{ trigger:'.ct-box', start:'top 95%', toggleActions:'play none none none' },
+  opacity:0, y:20, duration:.6, ease:'power3.out'
+});
+gsap.from('.ct-row', {
+  scrollTrigger:{ trigger:'.ct-rows', start:'top 95%', toggleActions:'play none none none' },
+  opacity:0, x:-20, duration:.5, stagger:.1, ease:'power3.out'
+});
+
+// ── HB NUMBERS COUNTER ──
+document.querySelectorAll('.hb-n').forEach(el => {
+  const raw = el.textContent.trim();
+  const num = parseFloat(raw);
+  const suffix = raw.replace(/[0-9.]/g, '');
+  if(!isNaN(num)){
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: num, duration: 1.8, ease: 'power2.out', delay: .8,
+      onUpdate: function(){ el.textContent = Math.round(obj.val) + suffix; }
+    });
+  }
+});
+
+// ── HERO GLOW PARALLAX ──
+gsap.to('.hero-glow', {
+  scrollTrigger:{ trigger:'#hero', start:'top top', end:'bottom top', scrub:1.5 },
+  y: -120, scale: 1.15, opacity:.4
+});
+
+// ── REVEAL fallback ──
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e)=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
