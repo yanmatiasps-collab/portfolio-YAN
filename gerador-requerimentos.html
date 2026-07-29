@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Requerimentos — INSS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f3ef;
+  --white: #ffffff;
+  --ink: #1a1a1a;
+  --ink2: #3a3a3a;
+  --muted: #888;
+  --line: #e0ddd6;
+  --blue: #1a3a6e;
+  --blue2: #234fa0;
+  --gold: #c8960a;
+  --red: #c0392b;
+  --green: #1a6e3a;
+  --card: #ffffff;
+  --input-bg: #fafaf8;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--blue);
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 2px 12px rgba(0,0,0,.18);
+}
+.header-left { display: flex; align-items: center; gap: 1rem; }
+.inss-badge {
+  background: var(--white);
+  border-radius: 4px;
+  padding: .28rem .7rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--blue);
+  letter-spacing: .06em;
+}
+.header-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  color: rgba(255,255,255,.9);
+  letter-spacing: .04em;
+}
+.header-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem;
+  color: rgba(255,255,255,.45);
+  letter-spacing: .08em;
+}
+
+/* ── LAYOUT ── */
+.app {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 64px);
+}
+
+/* ── PAINEL ESQUERDO ── */
+.panel-left {
+  background: var(--white);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(100vh - 64px);
+  position: sticky;
+  top: 64px;
+}
+.panel-section {
+  padding: 1.6rem 1.8rem;
+  border-bottom: 1px solid var(--line);
+}
+.panel-section:last-child { border: none; }
+.panel-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem;
+  color: var(--muted);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.panel-label::before {
+  content: '';
+  width: 14px; height: 2px;
+  background: var(--blue);
+  border-radius: 1px;
+}
+
+/* benefício selector */
+.benefit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+}
+.benefit-category {
+  grid-column: 1 / -1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .55rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: .5rem 0 .1rem;
+  border-top: 1px solid var(--line);
+  margin-top: .25rem;
+}
+.benefit-category:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+.benefit-btn {
+  background: var(--input-bg);
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  padding: .7rem .6rem;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: left;
+}
+.benefit-btn:hover {
+  border-color: var(--blue2);
+  background: #eef2fa;
+}
+.benefit-btn.active {
+  border-color: var(--blue);
+  background: #e8eef8;
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+.benefit-btn-icon { font-size: 1.1rem; margin-bottom: .3rem; }
+.benefit-btn-name {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.benefit-btn.active .benefit-btn-name { color: var(--blue); }
+
+/* form inputs */
+.form-group { margin-bottom: 1rem; }
+.form-group:last-child { margin-bottom: 0; }
+label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--ink2);
+  margin-bottom: .35rem;
+  letter-spacing: .01em;
+}
+input, select, textarea {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  padding: .6rem .85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  color: var(--ink);
+  transition: border-color .2s, box-shadow .2s;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--blue2);
+  box-shadow: 0 0 0 3px rgba(35,79,160,.1);
+}
+select { cursor: pointer; }
+textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .6rem; }
+
+/* gerar btn */
+.btn-gerar {
+  width: 100%;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: .9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  letter-spacing: .02em;
+}
+.btn-gerar:hover { background: var(--blue2); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,58,110,.3); }
+.btn-gerar:active { transform: translateY(0); }
+
+/* ── PAINEL DIREITO ── */
+.panel-right {
+  background: var(--bg);
+  padding: 2.5rem 3rem;
+  overflow-y: auto;
+}
+
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.preview-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  color: var(--muted);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.toolbar-btns { display: flex; gap: .5rem; }
+.btn-sm {
+  padding: .4rem .9rem;
+  border-radius: 5px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .75rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--line);
+  background: var(--white);
+  color: var(--ink2);
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+.btn-sm:hover { border-color: var(--blue); color: var(--blue); }
+.btn-sm.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+.btn-sm.primary:hover { background: var(--blue2); border-color: var(--blue2); }
+
+/* ── DOCUMENTO ── */
+.doc-wrapper {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+
+.doc-header {
+  background: var(--blue);
+  padding: 2rem 2.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.doc-logo-box {
+  width: 56px; height: 56px;
+  background: rgba(255,255,255,.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+.doc-header-text {}
+.doc-header-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: #fff;
+  letter-spacing: .02em;
+}
+.doc-header-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem;
+  color: rgba(255,255,255,.55);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-top: .25rem;
+}
+.doc-header-right {
+  margin-left: auto;
+  text-align: right;
+}
+.doc-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .1em;
+}
+.doc-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  color: rgba(255,255,255,.8);
+  margin-top: .2rem;
+}
+
+.doc-body { padding: 2rem 2.5rem; }
+
+.doc-benefit-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: #eef2fa;
+  border: 1px solid #c5d3e8;
+  border-radius: 4px;
+  padding: .4rem 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem;
+  font-weight: 500;
+  color: var(--blue);
+  letter-spacing: .06em;
+  margin-bottom: 1.5rem;
+}
+
+.doc-section { margin-bottom: 1.75rem; }
+.doc-section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem;
+  color: var(--blue);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--blue);
+  padding-bottom: .35rem;
+  margin-bottom: 1rem;
+}
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.doc-table td {
+  padding: .45rem .6rem;
+  font-size: .82rem;
+  border-bottom: 1px solid #f0ede6;
+}
+.doc-table td:first-child {
+  font-weight: 600;
+  color: var(--ink2);
+  width: 38%;
+  font-size: .78rem;
+}
+.doc-table td:last-child {
+  color: var(--ink);
+}
+.doc-table tr:last-child td { border: none; }
+
+.doc-text {
+  font-size: .88rem;
+  line-height: 1.85;
+  color: var(--ink2);
+  text-align: justify;
+}
+.doc-text p { margin-bottom: .85rem; }
+.doc-text p:last-child { margin: 0; }
+
+.doc-pendencias {
+  background: #fdf6e3;
+  border: 1px solid var(--gold);
+  border-left: 4px solid var(--gold);
+  border-radius: 4px;
+  padding: .9rem 1.1rem;
+  margin-top: 1rem;
+}
+.doc-pendencias-title {
+  font-weight: 600;
+  font-size: .82rem;
+  color: #7a5c05;
+  margin-bottom: .35rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.doc-pendencias-text {
+  font-size: .88rem;
+  line-height: 1.55;
+  color: var(--ink2);
+  white-space: pre-wrap;
+}
+
+.doc-assinatura {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.assin-box { text-align: center; }
+.assin-line {
+  border-top: 1.5px solid var(--ink);
+  margin-bottom: .5rem;
+}
+.assin-label {
+  font-size: .72rem;
+  color: var(--ink2);
+  font-weight: 500;
+}
+.assin-sub {
+  font-size: .65rem;
+  color: var(--muted);
+  margin-top: .15rem;
+}
+
+.doc-footer {
+  background: #f5f3ef;
+  border-top: 1px solid var(--line);
+  padding: .9rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.doc-footer-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .58rem;
+  color: var(--muted);
+  letter-spacing: .08em;
+}
+
+/* placeholder */
+.placeholder {
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--muted);
+}
+.placeholder-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .4; }
+.placeholder-title { font-size: 1rem; font-weight: 600; margin-bottom: .4rem; color: var(--ink2); }
+.placeholder-sub { font-size: .82rem; line-height: 1.6; }
+
+/* PRINT */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+  header, .panel-left, .preview-toolbar, .doc-footer { display: none !important; }
+  body { background: #fff; margin: 0; }
+  .app { display: block; }
+  .panel-right { padding: 0; overflow: visible; }
+  .doc-wrapper { border: none; box-shadow: none; border-radius: 0; }
+  .doc-header {
+    background: #fff !important;
+    padding: .8rem 1.2rem .6rem;
+    border-bottom: 2px solid #1a3a6e;
+  }
+  .doc-logo-box { display: none; }
+  .doc-header-title { color: #1a3a6e; font-size: .95rem; }
+  .doc-header-sub { color: #555; }
+  .doc-num { display: none !important; }
+  .doc-date { color: #333; }
+  .benefit-emoji { display: none !important; }
+  .doc-section { margin-bottom: .9rem; }
+  .doc-text { font-size: .78rem; line-height: 1.6; }
+  .doc-text p { margin-bottom: .5rem; }
+  .doc-table td { padding: .3rem .5rem; font-size: .75rem; }
+  .doc-assinatura { margin-top: 1.5rem; }
+  .doc-section-title { font-size: .55rem; padding-bottom: .2rem; margin-bottom: .6rem; }
+  .doc-benefit-tag { font-size: .62rem; margin-bottom: .9rem; padding: .3rem .8rem; }
+  .doc-header-title { font-size: .95rem; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .panel-left { max-height: none; position: static; }
+  .panel-right { padding: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="inss-badge">INSS</div>
+    <div class="header-title">Gerador de Requerimentos</div>
+  </div>
+  <div class="header-right">SISTEMA INTERNO · 2026 · INSS</div>
+</header>
+
+<div class="app">
+
+  <!-- PAINEL ESQUERDO -->
+  <div class="panel-left">
+
+    <!-- TIPO DE BENEFÍCIO -->
+    <div class="panel-section">
+      <div class="panel-label">Tipo de Benefício</div>
+      <div class="benefit-grid" id="benefitGrid">
+
+        <!-- INCAPACIDADE -->
+        <div class="benefit-category">Incapacidade</div>
+        <button class="benefit-btn" data-benefit="incapacidade_temporaria">
+          <div class="benefit-btn-icon">🏥</div>
+          <div class="benefit-btn-name">Benefício por Incapacidade Temporária</div>
+        </button>
+        <button class="benefit-btn" data-benefit="incapacidade_permanente">
+          <div class="benefit-btn-icon">♿</div>
+          <div class="benefit-btn-name">Aposentadoria por Incapacidade Permanente</div>
+        </button>
+        <button class="benefit-btn" data-benefit="auxilio_acidente">
+          <div class="benefit-btn-icon">🩺</div>
+          <div class="benefit-btn-name">Auxílio-Acidente</div>
+        </button>
+        <button class="benefit-btn" data-benefit="reabilitacao">
+          <div class="benefit-btn-icon">💪</div>
+          <div class="benefit-btn-name">Reabilitação Profissional</div>
+        </button>
+        <button class="benefit-btn" data-benefit="prorrogacao_incapacidade">
+          <div class="benefit-btn-icon">⏳</div>
+          <div class="benefit-btn-name">Prorrogação de Benefício por Incapacidade</div>
+        </button>
+
+        <!-- APOSENTADORIAS -->
+        <div class="benefit-category">Aposentadorias</div>
+        <button class="benefit-btn" data-benefit="aposentadoria_idade">
+          <div class="benefit-btn-icon">👴</div>
+          <div class="benefit-btn-name">Aposentadoria por Idade</div>
+        </button>
+        <button class="benefit-btn" data-benefit="aposentadoria_tempo">
+          <div class="benefit-btn-icon">📅</div>
+          <div class="benefit-btn-name">Aposentadoria por Tempo de Contribuição</div>
+        </button>
+        <button class="benefit-btn" data-benefit="aposentadoria_especial">
+          <div class="benefit-btn-icon">⚠️</div>
+          <div class="benefit-btn-name">Aposentadoria Especial</div>
+        </button>
+        <button class="benefit-btn" data-benefit="aposentadoria_rural">
+          <div class="benefit-btn-icon">🚜</div>
+          <div class="benefit-btn-name">Aposentadoria Rural</div>
+        </button>
+
+        <!-- MATERNIDADE / FAMÍLIA -->
+        <div class="benefit-category">Maternidade e Família</div>
+        <button class="benefit-btn" data-benefit="salario_maternidade">
+          <div class="benefit-btn-icon">👶</div>
+          <div class="benefit-btn-name">Salário-Maternidade Urbano</div>
+        </button>
+        <button class="benefit-btn" data-benefit="salario_maternidade_rural">
+          <div class="benefit-btn-icon">🌾</div>
+          <div class="benefit-btn-name">Salário-Maternidade Rural</div>
+        </button>
+        <button class="benefit-btn" data-benefit="salario_familia">
+          <div class="benefit-btn-icon">👨‍👩‍👧</div>
+          <div class="benefit-btn-name">Salário-Família</div>
+        </button>
+
+        <!-- DEPENDENTES -->
+        <div class="benefit-category">Dependentes</div>
+        <button class="benefit-btn" data-benefit="pensao_morte">
+          <div class="benefit-btn-icon">🕊️</div>
+          <div class="benefit-btn-name">Pensão por Morte</div>
+        </button>
+        <button class="benefit-btn" data-benefit="auxilio_reclusao">
+          <div class="benefit-btn-icon">🔐</div>
+          <div class="benefit-btn-name">Auxílio-Reclusão</div>
+        </button>
+
+        <!-- BPC/LOAS -->
+        <div class="benefit-category">BPC / LOAS</div>
+        <button class="benefit-btn" data-benefit="bpc_loas">
+          <div class="benefit-btn-icon">🤝</div>
+          <div class="benefit-btn-name">BPC/LOAS</div>
+        </button>
+        <button class="benefit-btn" data-benefit="bpc_deficiencia">
+          <div class="benefit-btn-icon">♿</div>
+          <div class="benefit-btn-name">BPC à Pessoa com Deficiência</div>
+        </button>
+        <button class="benefit-btn" data-benefit="bpc_idoso">
+          <div class="benefit-btn-icon">🧓</div>
+          <div class="benefit-btn-name">BPC ao Idoso</div>
+        </button>
+
+        <!-- ADMINISTRATIVO -->
+        <div class="benefit-category">Administrativo</div>
+        <button class="benefit-btn" data-benefit="atualizacao_cadastral">
+          <div class="benefit-btn-icon">📝</div>
+          <div class="benefit-btn-name">Atualização de Dados Cadastrais</div>
+        </button>
+        <button class="benefit-btn" data-benefit="procuracao">
+          <div class="benefit-btn-icon">📄</div>
+          <div class="benefit-btn-name">Procuração / Curatela</div>
+        </button>
+        <button class="benefit-btn" data-benefit="atualizacao_vinculos">
+          <div class="benefit-btn-icon">🔗</div>
+          <div class="benefit-btn-name">Atualizar Vínculos e Remunerações</div>
+        </button>
+        <button class="benefit-btn" data-benefit="certidao_ctc">
+          <div class="benefit-btn-icon">📋</div>
+          <div class="benefit-btn-name">Emissão de Certidão de Tempo de Contribuição — CTC</div>
+        </button>
+        <button class="benefit-btn" data-benefit="alterar_pagamento">
+          <div class="benefit-btn-icon">💳</div>
+          <div class="benefit-btn-name">Alterar Local ou Forma de Pagamento</div>
+        </button>
+        <button class="benefit-btn" data-benefit="acrescimo_25">
+          <div class="benefit-btn-icon">➕</div>
+          <div class="benefit-btn-name">Acréscimo de 25%</div>
+        </button>
+        <button class="benefit-btn" data-benefit="revisao">
+          <div class="benefit-btn-icon">🔍</div>
+          <div class="benefit-btn-name">Revisão</div>
+        </button>
+        <button class="benefit-btn" data-benefit="recurso_ordinario">
+          <div class="benefit-btn-icon">⚖️</div>
+          <div class="benefit-btn-name">Recurso Ordinário (Inicial)</div>
+        </button>
+        <button class="benefit-btn" data-benefit="pagamento_obito">
+          <div class="benefit-btn-icon">💰</div>
+          <div class="benefit-btn-name">Pagamento de Valor não Recebido até o Óbito</div>
+        </button>
+        <button class="benefit-btn" data-benefit="emissao_pagamento_nao_recebido">
+          <div class="benefit-btn-icon">📨</div>
+          <div class="benefit-btn-name">Solicitar Emissão de Pagamento não Recebido</div>
+        </button>
+        <button class="benefit-btn" data-benefit="pensao_alimenticia">
+          <div class="benefit-btn-icon">⚖️</div>
+          <div class="benefit-btn-name">Pensão Alimentícia — Cadastrar, Alterar ou Excluir</div>
+        </button>
+        <button class="benefit-btn" data-benefit="isencao_ir">
+          <div class="benefit-btn-icon">🧾</div>
+          <div class="benefit-btn-name">Isenção de Imposto de Renda</div>
+        </button>
+        <button class="benefit-btn" data-benefit="texto_personalizado">
+          <div class="benefit-btn-icon">✏️</div>
+          <div class="benefit-btn-name">Texto Personalizado</div>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- DADOS DO SEGURADO -->
+    <div class="panel-section" id="secaoDadosSegurado">
+      <div class="panel-label">Dados do Segurado</div>
+      <div class="form-group">
+        <label>Nome Completo *</label>
+        <input type="text" id="nome" placeholder="Nome completo do segurado">
+      </div>
+      <div class="form-group">
+        <label>CPF *</label>
+        <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+      </div>
+      <div class="form-group">
+        <label>Data de Nascimento</label>
+        <input type="date" id="nascimento">
+      </div>
+      <div class="form-group">
+        <label>Telefone / Contato</label>
+        <input type="text" id="telefone" placeholder="(00) 00000-0000" maxlength="15">
+      </div>
+    </div>
+
+    <!-- DADOS EXTRAS (aparece conforme tipo) -->
+    <div class="panel-section" id="extraSection" style="display:none">
+      <div class="panel-label" id="extraLabel">Dados Complementares</div>
+      <div id="extraFields"></div>
+    </div>
+
+    <!-- DADOS DA APS -->
+    
+    <!-- PROCURADOR -->
+    <div class="panel-section">
+      <div class="panel-label">Procurador / Representante Legal</div>
+
+      <div class="form-group">
+        <label>Nome do Procurador</label>
+        <input type="text" id="procuradorNome" placeholder="Nome do procurador ou representante">
+      </div>
+
+      <div class="form-group">
+        <label>CPF do Procurador</label>
+        <input type="text" id="procuradorCpf" placeholder="000.000.000-00" maxlength="14">
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de Representação</label>
+        <select id="tipoRepresentacao">
+          <option value="">Selecione</option>
+          <option>Tutor Nato</option>
+          <option>Tutor Legal</option>
+          <option>Curador</option>
+          <option>Responsável Termo de Guarda</option>
+          <option>Administrador Provisório</option>
+          <option>Procurador</option>
+        </select>
+      </div>
+    </div>
+
+
+    <div class="panel-section">
+      <div class="panel-label">Dados da APS / Unidade</div>
+      <div class="form-group">
+        <label>APS / Agência</label>
+        <input type="text" id="aps" value="APS Paraíba do Sul">
+      </div>
+      <div class="form-group">
+        <label>Data de Entrada</label>
+        <input type="date" id="dataEntrada">
+      </div>    </div>
+
+    <div class="panel-section">
+      <div class="panel-label">Pendências / Documentos Faltantes</div>
+      <div class="form-group">
+        <label>Observação (opcional)</label>
+        <textarea id="pendencias" rows="3" placeholder="Ex: A pessoa ficou de trazer a certidão de óbito que esqueceu."></textarea>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <button class="btn-gerar" onclick="gerarRequerimento()">
+        📄 Gerar Requerimento
+      </button>
+    </div>
+
+  </div>
+
+  <!-- PAINEL DIREITO -->
+  <div class="panel-right">
+    <div class="preview-toolbar">
+      <div class="preview-title">⬤ Visualização do Documento</div>
+      <div class="toolbar-btns">
+        <button class="btn-sm" onclick="limpar()">🗑 Limpar</button>
+        <button class="btn-sm primary" onclick="imprimirDocumento()">🖨 Imprimir</button>
+      </div>
+    </div>
+
+    <div class="doc-wrapper" id="docWrapper">
+      <div class="placeholder">
+        <div class="placeholder-icon">📋</div>
+        <div class="placeholder-title">Nenhum requerimento gerado</div>
+        <div class="placeholder-sub">Selecione o tipo de benefício,<br>preencha os dados e clique em <strong>Gerar Requerimento</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+window.addEventListener('DOMContentLoaded', () => {
+  const hoje = new Date().toISOString().split('T')[0];
+
+  const dataEntrada = document.getElementById('dataEntrada');
+
+  if (dataEntrada && !dataEntrada.value) {
+    dataEntrada.value = hoje;
+  }
+});
+
+
+// ── MÁSCARAS ──
+function aplicarMascaraCPF(input) {
+  if (!input) return;
+  input.addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g,'').slice(0,11);
+    if(v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+    else if(v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3');
+    else if(v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/,'$1.$2');
+    e.target.value = v;
+  });
+  input.addEventListener('keydown', function(e) {
+    const digits = e.target.value.replace(/\D/g,'');
+    if (digits.length >= 11 && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+    }
+  });
+}
+
+aplicarMascaraCPF(document.getElementById('cpf'));
+aplicarMascaraCPF(document.getElementById('procuradorCpf'));
+
+const cepInput = document.getElementById('cep');
+if (cepInput) {
+  cepInput.addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g,'').slice(0,8);
+    if(v.length > 5) v = v.replace(/(\d{5})(\d{0,3})/,'$1-$2');
+    e.target.value = v;
+  });
+}
+
+const telefoneInput = document.getElementById('telefone');
+if (telefoneInput) {
+  telefoneInput.addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g,'').slice(0,11);
+    if(v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+    else if(v.length > 6) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3');
+    else if(v.length > 2) v = v.replace(/(\d{2})(\d{0,})/,'($1) $2');
+    e.target.value = v;
+  });
+  telefoneInput.addEventListener('keydown', function(e) {
+    const digits = e.target.value.replace(/\D/g,'');
+    if (digits.length >= 11 && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+    }
+  });
+}
+
+// ── SELEÇÃO DE BENEFÍCIO ──
+let beneficioAtivo = null;
+document.querySelectorAll('.benefit-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.benefit-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    beneficioAtivo = btn.dataset.benefit;
+    atualizarCamposExtras(beneficioAtivo);
+    document.getElementById('secaoDadosSegurado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+const extrasConfig = {
+  incapacidade_temporaria: {
+    label: 'Dados do Afastamento',
+    fields: [
+
+    ]
+  },
+  incapacidade_permanente: {
+    label: 'Dados da Incapacidade',
+    fields: [
+
+    ]
+  },
+  salario_maternidade: {
+    label: 'Dados do Parto / Adoção',
+    fields: []
+  },
+  aposentadoria_idade: {
+    label: 'Dados da Aposentadoria',
+    fields: []
+  },
+  aposentadoria_tempo: {
+    label: 'Dados da Aposentadoria',
+    fields: []
+  },
+  aposentadoria_especial: {
+    label: 'Dados da Atividade Especial',
+    fields: [
+      {id:'tempoEspecial', label:'Tempo em Atividade Especial', type:'text', placeholder:'Ex: 25 anos'},
+    ]
+  },
+  pensao_morte: {
+    label: 'Dados do Falecido',
+    fields: []
+  },
+  auxilio_acidente: {
+    label: 'Dados do Acidente',
+    fields: [
+      {id:'dataAcidente', label:'Data do Acidente', type:'date'},
+      {id:'descricaoAcidente', label:'Descrição do Acidente', type:'textarea', placeholder:'Descreva o acidente e as sequelas'},
+      {id:'empresa', label:'Empresa onde ocorreu', type:'text', placeholder:'Nome da empresa'},
+    ]
+  },
+  bpc_loas: {
+    label: 'Dados do BPC/LOAS',
+    fields: [
+      {id:'tipoBpc', label:'Tipo de Beneficiário', type:'select', options:['Pessoa com Deficiência','Idoso (65 anos ou mais)']},
+    ]
+  },
+  salario_familia: {
+    label: 'Dados do Salário-Família',
+    fields: [
+      {id:'numFilhos', label:'Nº de Filhos até 14 anos', type:'text', placeholder:'Ex: 2'},
+      {id:'empresa', label:'Empregador Atual', type:'text', placeholder:'Nome da empresa'},
+    ]
+  },
+  auxilio_reclusao: {
+    label: 'Dados do Segurado Preso',
+    fields: [
+      {id:'nomePreso', label:'Nome do Segurado Recluso', type:'text', placeholder:'Nome completo'},
+      {id:'cpfPreso', label:'CPF do Recluso', type:'text', placeholder:'000.000.000-00'},
+    ]
+  },
+  bpc_deficiencia: {
+    label: 'Dados do BPC Deficiência',
+    fields: []
+  },
+  bpc_idoso: {
+    label: 'Dados do BPC Idoso',
+    fields: []
+  },
+  salario_maternidade_rural: {
+    label: 'Dados da Trabalhadora Rural',
+    fields: [
+      {id:'atividadeRural', label:'Atividade Rural', type:'text', placeholder:'Ex: Agricultura familiar'},
+    ]
+  },
+  aposentadoria_rural: {
+    label: 'Dados da Atividade Rural',
+    fields: [
+      {id:'tempoRural', label:'Tempo de Atividade Rural', type:'text', placeholder:'Ex: 20 anos'},
+    ]
+  },
+  atualizacao_cadastral: {
+    label: 'Dados da Atualização',
+    fields: [
+      {id:'dadosAtualizar', label:'Dados para Atualização', type:'textarea', placeholder:'Informe os dados a atualizar'},
+    ]
+  },
+  procuracao: {
+    label: 'Dados da Procuração',
+    fields: [
+      {id:'tipoProc', label:'Tipo de Documento', type:'select', options:['Tutor Nato','Tutor Legal','Curador','Responsável Termo de Guarda','Administrador Provisório','Procurador']},
+    ]
+  },
+  atualizacao_vinculos: {
+    label: 'Dados dos Vínculos',
+    fields: [
+      {id:'empregador', label:'Nome do Empregador / Empresa', type:'text', placeholder:'Ex: Empresa XYZ Ltda'},
+      {id:'periodoVinculo', label:'Período do Vínculo', type:'text', placeholder:'Ex: 01/2010 a 12/2015'},
+    ]
+  },
+  certidao_ctc: {
+    label: 'Dados da CTC',
+    fields: [
+      {id:'finalidadeCTC', label:'Finalidade da Certidão', type:'select', options:['Contagem Recíproca — RPPS (Servidor Público)','Contagem Recíproca — RGPS (Outro vínculo CLT)','Aposentadoria em Regime Próprio','Outro']},
+    ]
+  },
+  alterar_pagamento: {
+    label: 'Dados da Alteração de Pagamento',
+    fields: [
+      {id:'novaForma', label:'Nova Forma de Pagamento', type:'select', options:['Crédito em Conta Corrente','Crédito em Conta Poupança','Cartão Magnético (Cartão Benefício)','Crédito em Conta Salário']},
+      {id:'novoBanco', label:'Instituição Financeira', type:'text', placeholder:'Ex: Caixa Econômica Federal'},
+    ]
+  },
+  acrescimo_25: {
+    label: 'Dados do Acréscimo de 25%',
+    fields: []
+  },
+  revisao: {
+    label: 'Dados da Revisão',
+    fields: [
+      {id:'motivoRevisao', label:'Motivo da Revisão', type:'textarea', placeholder:'Descreva o motivo pelo qual o benefício foi calculado incorretamente'},
+    ]
+  },
+  recurso_ordinario: {
+    label: 'Dados do Recurso',
+    fields: [
+      {id:'fundamentoRecurso', label:'Fundamento do Recurso', type:'textarea', placeholder:'Descreva os motivos pelos quais a decisão deve ser reformada'},
+    ]
+  },
+  reabilitacao: {
+    label: 'Dados da Reabilitação',
+    fields: [
+      {id:'beneficioOrigem', label:'Benefício de Origem', type:'text', placeholder:'Ex: Auxílio por Incapacidade Nº 000'},
+      {id:'cid', label:'CID / Limitação', type:'text', placeholder:'Ex: M54.5'},
+      {id:'profissaoAnterior', label:'Profissão Anterior', type:'text', placeholder:'Ex: Operador de máquinas'},
+    ]
+  },
+  pagamento_obito: {
+    label: 'Dados do Falecido / Habilitação',
+    fields: [
+      {id:'nomeFalecido', label:'Nome do Beneficiário Falecido', type:'text', placeholder:'Nome completo'},
+      {id:'cpfFalecido', label:'CPF do Falecido', type:'text', placeholder:'000.000.000-00'},
+      {id:'qualidadeHerdeiro', label:'Qualidade do Requerente', type:'select', options:['Cônjuge / Companheiro(a)','Filho(a)','Pai / Mãe','Irmão / Irmã','Representante Legal']},
+    ]
+  },
+  pensao_alimenticia: {
+    label: 'Dados da Pensão Alimentícia',
+    fields: [
+      {id:'operacaoPensao', label:'Operação Solicitada', type:'select', options:['Cadastrar','Alterar','Excluir']},
+      {id:'nomeCredor', label:'Nome do Credor (Beneficiário da Pensão)', type:'text', placeholder:'Nome completo'},
+      {id:'cpfCredor', label:'CPF do Credor', type:'text', placeholder:'000.000.000-00'},
+    ]
+  },
+  emissao_pagamento_nao_recebido: {
+    label: 'Dados do Pagamento não Recebido',
+    fields: [
+      {id:'competenciaNaoRecebida', label:'Competência(s) não Recebida(s)', type:'text', placeholder:'Ex: Janeiro/2025, Fevereiro/2025'},
+      {id:'motivoNaoRecebimento', label:'Motivo Relatado (opcional)', type:'textarea', placeholder:'Ex: conta encerrada, dados bancários divergentes, etc.'},
+    ]
+  },
+  prorrogacao_incapacidade: {
+    label: 'Dados da Prorrogação',
+    fields: [
+      {id:'numBeneficioProrrogacao', label:'Número do Benefício (NB)', type:'text', placeholder:'Ex: 000.000.000-0'},
+      {id:'dataCessacaoPrevista', label:'Data de Cessação Prevista (DC)', type:'date'},
+      {id:'motivoProrrogacao', label:'Motivo da Prorrogação', type:'textarea', placeholder:'Descreva a persistência da incapacidade'},
+    ]
+  },
+  isencao_ir: {
+    label: 'Dados da Isenção de Imposto de Renda',
+    fields: [
+      {id:'doencaIsencao', label:'Doença / Moléstia (Lei nº 7.713/1988)', type:'text', placeholder:'Ex: Neoplasia maligna, cardiopatia grave, etc.'},
+      {id:'numBeneficioIsencao', label:'Número do Benefício (NB)', type:'text', placeholder:'Ex: 000.000.000-0'},
+    ]
+  },
+  texto_personalizado: {
+    label: 'Texto do Requerimento',
+    fields: [
+      {id:'tituloPersonalizado', label:'Título do Requerimento', type:'text', placeholder:'Ex: Requerimento de Reconsideração'},
+      {id:'textoLivre', label:'Texto Livre', type:'textarea', placeholder:'Digite aqui o texto completo do requerimento'},
+    ]
+  }
+};
+
+function atualizarCamposExtras(tipo) {
+  const sec = document.getElementById('extraSection');
+  const label = document.getElementById('extraLabel');
+  const fields = document.getElementById('extraFields');
+  const cfg = extrasConfig[tipo];
+  if(!cfg || cfg.fields.length === 0){ sec.style.display='none'; return; }
+  sec.style.display='block';
+  label.textContent = cfg.label;
+  fields.innerHTML = cfg.fields.map(f => {
+    if(f.type === 'select') {
+      return `<div class="form-group"><label>${f.label}</label><select id="${f.id}"><option value="">Selecione</option>${f.options.map(o=>`<option>${o}</option>`).join('')}</select></div>`;
+    } else if(f.type === 'textarea') {
+      return `<div class="form-group"><label>${f.label}</label><textarea id="${f.id}" placeholder="${f.placeholder||''}"></textarea></div>`;
+    } else {
+      return `<div class="form-group"><label>${f.label}</label><input type="${f.type}" id="${f.id}" placeholder="${f.placeholder||''}"></div>`;
+    }
+  }).join('');
+  // aplicar máscara CPF em campos dinâmicos
+  aplicarMascaraCPF(document.getElementById('cpfFalecido'));
+  aplicarMascaraCPF(document.getElementById('cpfCredor'));
+}
+
+function gv(id){ const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// ── TEXTOS DOS REQUERIMENTOS ──
+const textos = {
+  incapacidade_temporaria: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a), por meio deste instrumento, vem, respeitosamente, à presença de Vossa Senhoria requerer a concessão do <strong>Benefício por Incapacidade Temporária</strong> (antigo Auxílio-Doença), nos termos do art. 59 e seguintes da Lei nº 8.213/1991 e do Decreto nº 3.048/1999.</p>
+    <p>Informa o(a) requerente que se encontra incapaz para o exercício de sua atividade habitual em razão de enfermidade devidamente comprovada por documentação médica anexada ao presente requerimento.</p>
+    <p>O(A) requerente declara que os sintomas apresentados são condizentes com a documentação médica anexada, incluindo laudos, atestados e demais comprovantes clínicos que fundamentam o presente requerimento.</p>
+    <p>Data de início dos sintomas (declarada pelo segurado): <strong>_____ / _____ / _________</strong></p>
+    <p>Diante do exposto, requer seja apreciado e concedido o benefício requerido, conforme documentação anexa.</p>
+  `,
+  incapacidade_permanente: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a) vem requerer a concessão da <strong>Aposentadoria por Incapacidade Permanente</strong> (antiga Aposentadoria por Invalidez), com fundamento nos artigos 42 a 47 da Lei nº 8.213/1991.</p>
+    <p>Declara o(a) requerente que se encontra total e permanentemente incapacitado(a) para o trabalho, conforme laudos e documentação médica apresentados.</p>
+    <p>O(A) requerente declara que os sintomas apresentados são condizentes com a documentação médica anexada, incluindo laudos, perícias e demais comprovantes clínicos que atestam a natureza permanente e irreversível da incapacidade.</p>
+    <p>Data de início dos sintomas (declarada pelo segurado): <strong>_____ / _____ / _________</strong></p>
+    <p>Requer, portanto, a análise e concessão do benefício, com todas as vantagens legais pertinentes.</p>
+  `,
+  salario_maternidade: (d) => `
+    <p>A segurada acima qualificada, nos termos dos artigos 71 a 73 da Lei nº 8.213/1991, vem requerer a concessão do <strong>Salário-Maternidade Urbano</strong>.</p>
+    <p>A requerente declara que preenche os requisitos legais para a percepção do benefício, comprometendo-se a apresentar toda a documentação necessária, incluindo certidão de nascimento ou documento equivalente.</p>
+    <p>Requer seja concedido o Salário-Maternidade pelo período previsto na legislação vigente, conforme documentação anexada.</p>
+  `,
+  aposentadoria_idade: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a), com fundamento nos artigos 48 a 51 da Lei nº 8.213/1991, com a redação dada pela Emenda Constitucional nº 103/2019, vem requerer a concessão da <strong>Aposentadoria por Idade</strong>.</p>
+    <p>Declara o(a) requerente possuir os requisitos necessários para a concessão do benefício, apresentando toda a documentação comprobatória, requerendo a concessão com a maior renda mensal inicial possível, calculada sobre todos os salários de contribuição.</p>
+  `,
+  aposentadoria_tempo: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a), com fundamento nos artigos 52 a 56 da Lei nº 8.213/1991, vem requerer a concessão da <strong>Aposentadoria por Tempo de Contribuição</strong>.</p>
+    <p>Declara o(a) requerente possuir os requisitos necessários para a concessão do benefício, apresentando toda a documentação comprobatória. Requer a concessão com todos os direitos previstos em lei, incluindo a aplicação do fator previdenciário ou da regra de pontos, o que for mais favorável.</p>
+  `,
+  aposentadoria_especial: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a), com fundamento nos artigos 57 e 58 da Lei nº 8.213/1991 e no Decreto nº 3.048/1999, vem requerer a concessão da <strong>Aposentadoria Especial</strong>.</p>
+    <p>Declara o(a) requerente ter exercido atividade sujeita a condições especiais que prejudicam a saúde ou a integridade física pelo período de <strong>${d.tempoEspecial||'___'}</strong>, conforme documentação comprobatória anexada.</p>
+    <p>Apresenta Perfil Profissiográfico Previdenciário (PPP) e demais documentos comprobatórios, requerendo a concessão do benefício com todos os direitos previstos na legislação vigente.</p>
+  `,
+  pensao_morte: (d) => `
+    <p>O(A) requerente acima qualificado(a), na condição de dependente do(a) segurado(a) falecido(a), vem, nos termos dos artigos 74 a 79 da Lei nº 8.213/1991, requerer a concessão da <strong>Pensão por Morte</strong>.</p>
+    <p>Informa o(a) requerente que o(a) instituidor(a) da pensão mantinha qualidade de segurado(a) na data do óbito, conforme documentação e certidão de óbito em anexo.</p>
+    <p>Requer seja concedida a Pensão por Morte com pagamento desde a data do óbito ou do requerimento, conforme determina a legislação previdenciária vigente.</p>
+  `,
+  auxilio_acidente: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a), nos termos do artigo 86 da Lei nº 8.213/1991, vem requerer a concessão do <strong>Auxílio-Acidente</strong>, em razão de sequelas resultantes de acidente que reduziram sua capacidade para o trabalho habitual.</p>
+    <p>Informa o(a) requerente que em <strong>${d.dataAcidente||'___/___/______'}</strong> sofreu acidente${d.empresa ? ' durante o exercício de suas atividades na empresa <strong>'+d.empresa+'</strong>' : ''}, do qual resultaram sequelas permanentes que diminuem sua capacidade laboral.${d.descricaoAcidente ? ' Descrição: '+d.descricaoAcidente : ''}</p>
+    <p>Apresenta laudos médicos e documentação comprobatória das sequelas, requerendo a concessão do Auxílio-Acidente conforme previsto na legislação previdenciária vigente.</p>
+  `,
+  bpc_loas: (d) => `
+    <p>O(A) requerente acima qualificado(a), com fundamento no art. 203, inciso V, da Constituição Federal e na Lei nº 8.742/1993 (LOAS), vem requerer a concessão do <strong>Benefício de Prestação Continuada (BPC/LOAS)</strong>, na condição de <strong>${d.tipoBpc||'beneficiário(a)'}</strong>.</p>
+    <p>A situação de vulnerabilidade socioeconômica do(a) requerente e de sua família encontra-se registrada no Cadastro Único para Programas Sociais do Governo Federal (CadÚnico), conforme dados disponíveis para consulta pelo INSS.</p>
+    <p>Requer a concessão do BPC conforme previsto na legislação, apresentando toda a documentação necessária para comprovação dos requisitos legais.</p>
+  `,
+  salario_familia: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a), nos termos do artigo 65 e seguintes da Lei nº 8.213/1991, vem requerer a concessão do <strong>Salário-Família</strong>.</p>
+    <p>Declara o(a) requerente possuir <strong>${d.numFilhos||'___'} filho(s)</strong> menor(es) de 14 (quatorze) anos de idade ou inválido(s) de qualquer idade, dependentes para fins previdenciários, e que atualmente exerce atividade remunerada como empregado(a)${d.empresa ? ' na empresa <strong>'+d.empresa+'</strong>' : ''}, com remuneração dentro dos limites legais para percepção do benefício.</p>
+    <p>Apresenta a documentação dos dependentes e requer o pagamento do Salário-Família para cada filho, na forma da legislação vigente.</p>
+  `,
+  auxilio_reclusao: (d) => `
+    <p>O(A) requerente acima qualificado(a), na condição de dependente do(a) segurado(a) recluso(a) <strong>${d.nomePreso||'__________________'}</strong>, CPF nº ${d.cpfPreso||'___.___.___-__'}, vem, nos termos do artigo 80 da Lei nº 8.213/1991, requerer a concessão do <strong>Auxílio-Reclusão</strong>.</p>
+    <p>Informa o(a) requerente que o(a) segurado(a) encontra-se recolhido(a) em estabelecimento prisional, mantendo qualidade de segurado(a) de baixa renda, conforme certidão de encarceramento e demais documentos em anexo.</p>
+    <p>Requer a concessão do Auxílio-Reclusão com pagamento desde a data do requerimento, conforme determina a legislação previdenciária vigente.</p>
+  `,
+  reabilitacao: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a), com fundamento nos artigos 89 a 93 da Lei nº 8.213/1991, vem requerer a concessão do <strong>Serviço de Reabilitação Profissional</strong>.</p>
+    <p>Informa o(a) requerente que é beneficiário(a) do INSS por meio do <strong>${d.beneficioOrigem||'benefício de origem'}</strong>, em razão de limitação identificada pelo CID: <strong>${d.cid||'_________'}</strong>, que o(a) impede de exercer sua atividade habitual${d.profissaoAnterior ? ' de <strong>'+d.profissaoAnterior+'</strong>' : ''}.</p>
+    <p>Requer a avaliação e encaminhamento ao Programa de Reabilitação Profissional, a fim de que seja(m) indicado(s) o(s) recurso(s) terapêutico(s) necessário(s) para o retorno ao mercado de trabalho em função compatível com sua capacidade laborativa residual.</p>
+  `,
+
+  bpc_deficiencia: (d) => `
+    <p>O(A) requerente acima qualificado(a), com fundamento no art. 203, inciso V, da Constituição Federal e na Lei nº 8.742/1993 (LOAS), vem requerer a concessão do <strong>Benefício de Prestação Continuada à Pessoa com Deficiência (BPC/LOAS)</strong>.</p>
+    <p>Declara possuir impedimento de longo prazo de natureza física, mental, intelectual ou sensorial que, em interação com barreiras, obstrui sua participação plena e efetiva na sociedade, conforme documentação médica e social anexada.</p>
+    <p>Requer a concessão do benefício conforme previsto na legislação, apresentando toda a documentação necessária para comprovação dos requisitos legais.</p>
+  `,
+
+  bpc_idoso: (d) => `
+    <p>O(A) requerente acima qualificado(a), com fundamento no art. 203, inciso V, da Constituição Federal e na Lei nº 8.742/1993 (LOAS), vem requerer a concessão do <strong>Benefício de Prestação Continuada ao Idoso (BPC/LOAS)</strong>.</p>
+    <p>Declara possuir 65 (sessenta e cinco) anos de idade ou mais, conforme documento de identificação anexado. A situação socioeconômica do(a) requerente e de sua família encontra-se registrada no Cadastro Único para Programas Sociais do Governo Federal (CadÚnico), disponível para verificação pelo INSS.</p>
+    <p>Requer a concessão do benefício conforme previsto na legislação, apresentando toda a documentação necessária para comprovação dos requisitos legais.</p>
+  `,
+
+  salario_maternidade_rural: (d) => `
+    <p>A requerente acima qualificada, nos termos do art. 71-A da Lei nº 8.213/1991, vem requerer a concessão do <strong>Salário-Maternidade Rural</strong>.</p>
+    <p>Declara a requerente exercer atividade rural na condição de <strong>${d.atividadeRural||'________________'}</strong>, comprovando o exercício da atividade rural nos 10 (dez) meses anteriores ao parto, conforme documentação anexada.</p>
+    <p>Requer a concessão do Salário-Maternidade pelo período de 120 (cento e vinte) dias, nos termos da legislação vigente.</p>
+  `,
+
+  aposentadoria_rural: (d) => `
+    <p>O(A) requerente acima qualificado(a), com fundamento nos artigos 48 e 143 da Lei nº 8.213/1991 e na Emenda Constitucional nº 103/2019, vem requerer a concessão da <strong>Aposentadoria por Idade Rural</strong>.</p>
+    <p>Declara o(a) requerente ter exercido atividade rural pelo período de <strong>${d.tempoRural||'________________'}</strong>, em regime de economia familiar ou como empregado(a) rural, apresentando documentação comprobatória do exercício da atividade no período exigido pela legislação.</p>
+    <p>Requer a concessão do benefício, com todos os direitos previstos em lei.</p>
+  `,
+
+  atualizacao_cadastral: (d) => `
+    <p>O(A) requerente acima qualificado(a) vem requerer a <strong>Atualização de Dados Cadastrais</strong> junto ao INSS, nos termos da legislação previdenciária vigente.</p>
+    <p>Informa o(a) requerente que os dados a serem atualizados são: <strong>${d.dadosAtualizar||'________________'}</strong>, apresentando documentação comprobatória das alterações solicitadas.</p>
+    <p>Requer a análise e atualização dos dados no sistema do INSS, a fim de manter o cadastro devidamente regularizado.</p>
+  `,
+
+  procuracao: (d) => `
+    <p>O(A) requerente acima qualificado(a) vem requerer o <strong>Cadastro de Procurador / Representante Legal</strong> junto ao INSS, nos termos da Instrução Normativa PRES/INSS nº 77/2015.</p>
+    <p>O tipo de representação apresentada é: <strong>${d.tipoRepresentacao||d.tipoProc||'________________'}</strong>, conforme instrumento legal anexado ao presente requerimento.</p>
+    <p>Requer o cadastramento do representante no sistema do INSS para fins de acompanhamento e gestão do(s) benefício(s) do(a) representado(a).</p>
+  `,
+
+  atualizacao_vinculos: (d) => `
+    <p>O(A) requerente acima qualificado(a) vem requerer a <strong>Atualização de Vínculos e Remunerações</strong> junto ao Cadastro Nacional de Informações Sociais (CNIS).</p>
+    <p>Informa o(a) requerente que existem divergências ou ausências de registros referentes ao vínculo com <strong>${d.empregador||'________________'}</strong>, no período de <strong>${d.periodoVinculo||'________________'}</strong>, conforme documentação comprobatória anexada (CTPS, contracheques, declarações de empregador, entre outros).</p>
+    <p>Requer a análise e regularização dos dados junto ao CNIS, a fim de que os vínculos e remunerações sejam devidamente atualizados para fins de cálculo de benefícios previdenciários.</p>
+  `,
+
+  certidao_ctc: (d) => `
+    <p>O(A) requerente acima qualificado(a) vem requerer a emissão da <strong>Certidão de Tempo de Contribuição (CTC)</strong>, nos termos da legislação previdenciária vigente.</p>
+    <p>A presente certidão destina-se a: <strong>${d.finalidadeCTC||'________________'}</strong>, para fins de contagem recíproca de tempo de contribuição junto ao regime previdenciário indicado.</p>
+    <p>Declara o(a) requerente estar ciente de que a emissão da CTC implica a exclusão do tempo de contribuição certificado do cômputo para concessão de benefício neste Regime Geral de Previdência Social (RGPS), conforme disposto no art. 130 da Lei nº 8.213/1991.</p>
+  `,
+
+  alterar_pagamento: (d) => `
+    <p>O(A) requerente acima qualificado(a) vem requerer a <strong>Alteração de Local ou Forma de Pagamento</strong> do benefício, nos termos da legislação previdenciária vigente.</p>
+    <p>Solicita a alteração para: <strong>${d.novaForma||'________________'}</strong>${d.novoBanco ? ', junto à instituição financeira: <strong>'+d.novoBanco+'</strong>' : ''}, apresentando documentação necessária para efetivação da mudança.</p>
+    <p>Requer que a alteração seja processada a partir da competência seguinte ao deferimento, conforme normas do INSS.</p>
+  `,
+
+  acrescimo_25: (d) => `
+    <p>O(A) requerente acima qualificado(a), com fundamento no art. 45 da Lei nº 8.213/1991, vem requerer o <strong>Acréscimo de 25% (vinte e cinco por cento)</strong> sobre a Aposentadoria por Incapacidade Permanente.</p>
+    <p>Declara o(a) requerente necessitar de assistência permanente de outra pessoa para realização das atividades da vida diária, em razão de sua condição de saúde, conforme documentação médica e laudo pericial anexados.</p>
+    <p>Requer a concessão do acréscimo, conforme previsto em lei.</p>
+  `,
+
+  revisao: (d) => `
+    <p>O(A) requerente acima qualificado(a) vem requerer a <strong>Revisão</strong> do benefício, nos termos do art. 103 da Lei nº 8.213/1991.</p>
+    <p>Informa o(a) requerente que o benefício foi concedido/calculado de forma incorreta, em razão de: <strong>${d.motivoRevisao||'________________'}</strong>, conforme documentação comprobatória anexada ao presente requerimento.</p>
+    <p>Requer a revisão do benefício com recálculo da Renda Mensal Inicial (RMI) e pagamento das diferenças devidas, respeitado o prazo decadencial de 10 (dez) anos previsto na legislação vigente.</p>
+  `,
+
+  recurso_ordinario: (d) => `
+    <p>O(A) requerente acima qualificado(a), inconformado(a) com a decisão proferida pelo INSS, vem, tempestivamente, interpor <strong>Recurso Ordinário (Inicial)</strong> perante o Conselho de Recursos da Previdência Social (CRPS), nos termos do Decreto nº 10.662/2021.</p>
+    <p>Alega o(a) recorrente que a decisão impugnada merece reforma, pois: <strong>${d.fundamentoRecurso||'________________'}</strong>, conforme documentos e provas anexados ao presente recurso.</p>
+    <p>Requer o conhecimento e provimento do presente recurso, com a reforma da decisão recorrida e a concessão do direito pleiteado, com todos os efeitos legais daí decorrentes.</p>
+  `,
+
+  pagamento_obito: (d) => `
+    <p>O(A) requerente acima qualificado(a), na condição de <strong>${d.qualidadeHerdeiro||'herdeiro(a)/sucessor(a)'}</strong> do(a) beneficiário(a) falecido(a) <strong>${d.nomeFalecido||'________________'}</strong>, CPF nº <strong>${d.cpfFalecido||'___.___.___-__'}</strong>, vem requerer o <strong>Pagamento de Valores não Recebidos até a Data do Óbito</strong>, com fundamento no art. 112 da Lei nº 8.213/1991.</p>
+    <p>Informa o(a) requerente que o(a) beneficiário(a) deixou valores de benefício pendentes de pagamento, relativos às competências não liquidadas até a data do óbito, conforme extrato de benefício e certidão de óbito em anexo.</p>
+    <p>Declara o(a) requerente que não existe testamento e que é o(a) legítimo(a) sucessor(a) nos termos da legislação civil vigente, apresentando documentação comprobatória do vínculo familiar e da qualidade de sucessor(a).</p>
+    <p>Requer, portanto, o pagamento dos valores devidos e não recebidos pelo(a) falecido(a), na forma do art. 112 da Lei nº 8.213/1991, que dispensa inventário ou arrolamento para o pagamento de pequenos valores.</p>
+  `,
+
+  pensao_alimenticia: (d) => `
+    <p>O(A) requerente acima qualificado(a), nos termos da legislação previdenciária e do art. 115, inciso II, da Lei nº 8.213/1991, combinado com o art. 529 do Código de Processo Civil, vem requerer o <strong>${d.operacaoPensao||'Cadastro'} de Desconto de Pensão Alimentícia</strong> sobre o benefício previdenciário.</p>
+    <p>Informa o(a) requerente que o(a) credor(a) da pensão é <strong>${d.nomeCredor||'________________'}</strong>${d.cpfCredor ? ', CPF nº <strong>'+d.cpfCredor+'</strong>' : ''}, conforme determinação judicial ou acordo homologado em juízo, apresentando o respectivo título judicial em anexo.</p>
+    <p>Requer o processamento da operação solicitada no sistema do INSS, com efetividade a partir da competência seguinte ao deferimento, nos termos da legislação vigente.</p>
+  `,
+
+  emissao_pagamento_nao_recebido: (d) => `
+    <p>O(A) requerente acima qualificado(a) vem requerer a <strong>Emissão de Pagamento não Recebido</strong> junto ao INSS, em razão de valor(es) de competência(s) não creditado(s) em sua conta.</p>
+    <p>Informa o(a) requerente que o(s) pagamento(s) referente(s) à(s) competência(s) <strong>${d.competenciaNaoRecebida||'________________'}</strong> não foram devidamente creditados${d.motivoNaoRecebimento ? ', em razão de: <strong>'+d.motivoNaoRecebimento+'</strong>' : ''}, conforme comprovantes e extratos bancários em anexo.</p>
+    <p>Declara o(a) requerente que os valores não foram recebidos por motivo alheio à sua vontade, não tendo ocorrido qualquer irregularidade que impeça o pagamento, e que os dados bancários cadastrados estão corretos e ativos.</p>
+    <p>Requer a análise do caso, a reemissão e o crédito dos valores não recebidos, bem como a regularização do histórico de pagamentos junto ao sistema do INSS.</p>
+  `,
+
+  prorrogacao_incapacidade: (d) => `
+    <p>O(A) segurado(a) acima qualificado(a), titular do benefício${d.numBeneficioProrrogacao ? ' nº <strong>'+d.numBeneficioProrrogacao+'</strong>' : ''}, vem requerer a <strong>Prorrogação do Benefício por Incapacidade Temporária</strong>, nos termos do art. 60, §9º, da Lei nº 8.213/1991.</p>
+    <p>Informa o(a) requerente que a data de cessação do benefício (DC) foi fixada para <strong>${d.dataCessacaoPrevista||'________________'}</strong>, porém a incapacidade que deu origem ao benefício persiste até a presente data.</p>
+    ${d.motivoProrrogacao ? `<p>Esclarece o(a) requerente que: <strong>${d.motivoProrrogacao}</strong>.</p>` : ''}
+    <p>Declara o(a) requerente permanecer incapacitado(a) para o exercício de sua atividade habitual, conforme documentação médica atualizada anexada ao presente requerimento.</p>
+    <p>Requer, diante do exposto, a prorrogação do benefício por incapacidade, com a realização de nova perícia médica, caso necessário, e a manutenção do pagamento sem interrupção.</p>
+  `,
+
+  isencao_ir: (d) => `
+    <p>O(A) requerente acima qualificado(a), titular do benefício${d.numBeneficioIsencao ? ' nº <strong>'+d.numBeneficioIsencao+'</strong>' : ''}, vem requerer a <strong>Isenção de Imposto de Renda</strong> incidente sobre os proventos de aposentadoria, nos termos do art. 6º, inciso XIV, da Lei nº 7.713/1988.</p>
+    <p>Informa o(a) requerente ser portador(a) da doença/moléstia <strong>${d.doencaIsencao||'________________'}</strong>, enquadrada no rol de doenças graves previsto na legislação de regência, conforme laudo médico pericial e documentação clínica anexados.</p>
+    <p>Declara o(a) requerente que a condição de saúde foi devidamente diagnosticada por médico especialista, e que os documentos apresentados comprovam o nexo entre a moléstia e a isenção pretendida.</p>
+    <p>Requer, diante do exposto, o reconhecimento da isenção do Imposto de Renda sobre os rendimentos do benefício, com a retenção cessada a partir da comprovação da doença, conforme documentação anexa.</p>
+  `,
+
+  texto_personalizado: (d) => `
+    ${d.textoLivre ? d.textoLivre.split(/\n+/).filter(p=>p.trim()).map(p=>`<p>${p}</p>`).join('') : '<p>________________________________________________</p>'}
+  `
+
+};
+
+const nomesBeneficios = {
+  incapacidade_temporaria: 'Benefício por Incapacidade Temporária',
+  incapacidade_permanente: 'Aposentadoria por Incapacidade Permanente',
+  salario_maternidade: 'Salário-Maternidade Urbano',
+  aposentadoria_idade: 'Aposentadoria por Idade',
+  aposentadoria_tempo: 'Aposentadoria por Tempo de Contribuição',
+  aposentadoria_especial: 'Aposentadoria Especial',
+  pensao_morte: 'Pensão por Morte',
+  auxilio_acidente: 'Auxílio-Acidente',
+  bpc_loas: 'BPC/LOAS – Benefício de Prestação Continuada',
+  salario_familia: 'Salário-Família',
+  auxilio_reclusao: 'Auxílio-Reclusão',
+  reabilitacao: 'Reabilitação Profissional',
+  bpc_deficiencia: 'BPC à Pessoa com Deficiência',
+  bpc_idoso: 'BPC ao Idoso',
+  salario_maternidade_rural: 'Salário-Maternidade Rural',
+  aposentadoria_rural: 'Aposentadoria Rural',
+  atualizacao_cadastral: 'Atualização de Dados Cadastrais',
+  procuracao: 'Cadastro de Procuração / Representante Legal',
+  atualizacao_vinculos: 'Atualização de Vínculos e Remunerações',
+  certidao_ctc: 'Certidão de Tempo de Contribuição — CTC',
+  alterar_pagamento: 'Alteração de Local ou Forma de Pagamento',
+  acrescimo_25: 'Acréscimo de 25%',
+  revisao: 'Revisão de Benefício',
+  recurso_ordinario: 'Recurso Ordinário (Inicial)',
+  pagamento_obito: 'Pagamento de Valor não Recebido até a Data do Óbito do Beneficiário',
+  emissao_pagamento_nao_recebido: 'Solicitação de Emissão de Pagamento não Recebido',
+  pensao_alimenticia: 'Pensão Alimentícia — Cadastrar, Alterar ou Excluir',
+  prorrogacao_incapacidade: 'Prorrogação de Benefício por Incapacidade',
+  isencao_ir: 'Isenção de Imposto de Renda',
+  texto_personalizado: 'Texto Personalizado',
+};
+
+const iconesBeneficios = {
+  incapacidade_temporaria:'🏥', incapacidade_permanente:'♿',
+  salario_maternidade:'👶', aposentadoria_idade:'👴',
+  aposentadoria_tempo:'📅', aposentadoria_especial:'⚠️',
+  pensao_morte:'🕊️', auxilio_acidente:'🩺',
+  bpc_loas:'🤝', salario_familia:'👨‍👩‍👧',
+  auxilio_reclusao:'🔐', reabilitacao:'💪',
+  bpc_deficiencia:'♿',
+  bpc_idoso:'🧓',
+  salario_maternidade_rural:'🌾',
+  aposentadoria_rural:'🚜',
+  atualizacao_cadastral:'📝',
+  procuracao:'📄',
+  atualizacao_vinculos:'🔗',
+  certidao_ctc:'📋',
+  alterar_pagamento:'💳',
+  acrescimo_25:'➕',
+  revisao:'🔍',
+  recurso_ordinario:'⚖️',
+  pagamento_obito:'💰',
+  emissao_pagamento_nao_recebido:'📨',
+  pensao_alimenticia:'⚖️',
+  prorrogacao_incapacidade:'⏳',
+  isencao_ir:'🧾',
+  texto_personalizado:'✏️',
+};
+
+function hoje() {
+  return new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+}
+function fmtData(val) {
+  if(!val) return '___/___/______';
+  const [y,m,d] = val.split('-');
+  return `${d}/${m}/${y}`;
+}
+function numReq() {
+  return Math.floor(Math.random()*90000+10000)+'/'+new Date().getFullYear();
+}
+
+function gerarRequerimento() {
+  if(!beneficioAtivo){
+    alert('Selecione o tipo de benefício.');
+    return;
+  }
+
+  if (!gv('nome')) {
+    alert('Informe o nome completo.');
+    return;
+  }
+
+  if (!gv('cpf')) {
+    alert('Informe o CPF.');
+    return;
+  }
+  const nome = escapeHtml(gv('nome')) || '____________________________';
+  const cpf = escapeHtml(gv('cpf')) || '___.___.___-__';
+  const nasc = gv('nascimento');
+  const telefone = escapeHtml(gv('telefone'));
+  const aps = escapeHtml(gv('aps')) || 'APS ____________________';
+  const dataEntrada = gv('dataEntrada');
+  const pendencias = escapeHtml(gv('pendencias'));
+  
+  
+
+  // extras
+  const extras = {};
+  const cfg = extrasConfig[beneficioAtivo];
+  if(cfg) cfg.fields.forEach(f => { extras[f.id] = gv(f.id); });
+  // incluir tipo de representação do painel lateral
+  extras.tipoRepresentacao = gv('tipoRepresentacao');
+  // formatar datas nos extras
+  ['dataParto','dataUltimaContrib','dataAcidente','dataObito','dataReclusao','dataCessacaoPrevista'].forEach(k => {
+    if(extras[k]) extras[k] = fmtData(extras[k]);
+  });
+
+  const nomeBen = (beneficioAtivo === 'texto_personalizado' && extras.tituloPersonalizado) ? extras.tituloPersonalizado : nomesBeneficios[beneficioAtivo];
+  const icone = iconesBeneficios[beneficioAtivo];
+  const textoBen = textos[beneficioAtivo](extras);
+  const numRequerimento = numReq();
+
+  const doc = document.getElementById('docWrapper');
+  doc.innerHTML = `
+    <div class="doc-header">
+      <div class="doc-logo-box">🏛️</div>
+      <div class="doc-header-text">
+        <div class="doc-header-title">Instituto Nacional do Seguro Social — INSS</div>
+        <div class="doc-header-sub">Ministério da Previdência Social · Requerimento de Benefício</div>
+      </div>
+      <div class="doc-header-right">
+        <div class="doc-num">REQ. Nº ${numRequerimento}</div>
+        <div class="doc-date">${hoje()}</div>
+      </div>
+    </div>
+
+    <div class="doc-body">
+      <div class="doc-benefit-tag"><span class="benefit-emoji">${icone}</span> ${nomeBen}</div>
+
+      <div class="doc-section">
+        <div class="doc-section-title">Identificação do Requerente / Segurado</div>
+        <table class="doc-table">
+          <tr><td>Nome Completo</td><td><strong>${nome}</strong></td></tr>
+          <tr><td>CPF</td><td>${cpf}</td></tr>
+          ${nasc ? `<tr><td>Data de Nascimento</td><td>${fmtData(nasc)}</td></tr>` : ''}
+          ${telefone ? `<tr><td>Telefone / Contato</td><td>${telefone}</td></tr>` : ''}
+        </table>
+      </div>
+
+      <div class="doc-section">
+        <div class="doc-section-title">Requerimento</div>
+        <div class="doc-text">${textoBen}</div>
+      </div>
+
+      <div class="doc-section">
+        <div class="doc-section-title">Declaração</div>
+        <div class="doc-text">
+          <p>O(A) requerente declara que as informações prestadas neste requerimento são verdadeiras e correspondem à sua real situação, comprometendo-se a comunicar ao INSS qualquer alteração que possa interferir no benefício solicitado.</p>
+          <p>Declara ainda estar ciente de que o benefício será analisado conforme a legislação previdenciária vigente, e que poderá ser solicitada documentação complementar durante o processo de análise.</p>
+        </div>
+      </div>
+
+      
+      ${gv('procuradorNome') || gv('procuradorCpf') || gv('tipoRepresentacao') ? `
+      <div class="doc-section">
+        <div class="doc-section-title">Procurador / Representante Legal</div>
+        <table class="doc-table">
+          ${gv('procuradorNome') ? `<tr><td>Nome</td><td>${gv('procuradorNome')}</td></tr>` : ''}
+          ${gv('procuradorCpf') ? `<tr><td>CPF</td><td>${gv('procuradorCpf')}</td></tr>` : ''}
+          ${gv('tipoRepresentacao') ? `<tr><td>Representação</td><td>${gv('tipoRepresentacao')}</td></tr>` : ''}
+        </table>
+      </div>` : ''}
+
+      ${pendencias ? `
+      <div class="doc-pendencias">
+        <div class="doc-pendencias-title">⚠️ Pendência / Observação do Atendimento</div>
+        <div class="doc-pendencias-text">${pendencias}</div>
+      </div>` : ''}
+
+      <div class="doc-assinatura">
+        <div class="assin-box">
+          <div style="height:50px"></div>
+          <div class="assin-line"></div>
+          <div class="assin-label">${nome}</div>
+          <div class="assin-sub">Requerente / Segurado(a) · CPF: ${cpf}</div>
+        </div>
+        <div class="assin-box">
+          <div style="height:50px"></div>
+          <div class="assin-line"></div>
+          <div class="assin-label">Atendimento INSS</div>
+          <div class="assin-sub">${aps}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <div class="doc-footer-text">INSS · ${aps} · Data de Entrada: ${dataEntrada ? fmtData(dataEntrada) : hoje()}</div>
+      <div class="doc-footer-text">Requerimento Nº ${numRequerimento} · Gerado em ${hoje()}</div>
+    </div>
+  `;
+}
+
+function imprimirDocumento() {
+  const doc = document.getElementById('docWrapper');
+  const placeholder = doc.querySelector('.placeholder');
+  if (placeholder) {
+    alert('Gere um requerimento antes de imprimir.');
+    return;
+  }
+  window.print();
+}
+
+function limpar() {
+  document.querySelectorAll('input,select,textarea').forEach(el => el.value = '');
+  document.querySelectorAll('.benefit-btn').forEach(b => b.classList.remove('active'));
+  beneficioAtivo = null;
+  document.getElementById('extraSection').style.display = 'none';
+  document.getElementById('docWrapper').innerHTML = `
+    <div class="placeholder">
+      <div class="placeholder-icon">📋</div>
+      <div class="placeholder-title">Nenhum requerimento gerado</div>
+      <div class="placeholder-sub">Selecione o tipo de benefício,<br>preencha os dados e clique em <strong>Gerar Requerimento</strong>.</div>
+    </div>`;
+}
+</script>
+</body>
+</html>
